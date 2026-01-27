@@ -1,0 +1,11 @@
+# Java build
+bin/
+*.class
+
+# Gradle
+.gradle/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
