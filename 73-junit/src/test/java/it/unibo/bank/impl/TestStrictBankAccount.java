@@ -5,6 +5,7 @@ import it.unibo.bank.api.BankAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
@@ -21,7 +22,8 @@ class TestStrictBankAccount {
      */
     @BeforeEach
     public void setUp() {
-        fail("To be implemented");
+        this.mRossi = new AccountHolder("Mario", "Rossi", 1);
+        this.bankAccount = new StrictBankAccount(mRossi, 0);
     }
 
     /**
@@ -29,7 +31,9 @@ class TestStrictBankAccount {
      */
     @Test
     public void testInitialization() {
-        fail("To be implemented");
+        assertEquals(0.0, bankAccount.getBalance());
+        assertEquals(0, bankAccount.getTransactionsCount());
+        assertEquals(mRossi, bankAccount.getAccountHolder());
     }
 
     /**
@@ -37,15 +41,36 @@ class TestStrictBankAccount {
      */
     @Test
     public void testManagementFees() {
-        fail("To be implemented");
+        bankAccount.deposit(1, 100);
+
+        int transactionsBefore = bankAccount.getTransactionsCount();
+        double expectedFee = StrictBankAccount.MANAGEMENT_FEE + transactionsBefore * StrictBankAccount.TRANSACTION_FEE;
+
+
+        double expectedBalance;
+        if (((StrictBankAccount) bankAccount).isWithdrawAllowed(expectedFee)) {
+            expectedBalance = 100 - expectedFee;
+        } else {
+            expectedBalance = 100;
+        }
+
+        bankAccount.chargeManagementFees(1);
+
+        assertEquals(expectedBalance, bankAccount.getBalance());
     }
+
 
     /**
      * Test that withdrawing a negative amount causes a failure.
      */
     @Test
     public void testNegativeWithdraw() {
-        fail("To be implemented");
+        try {
+            bankAccount.withdraw(1, -50);
+            fail("Negative withdraw should throw exception");
+        } catch (IllegalArgumentException e) {
+            // Expected exception
+        } 
     }
 
     /**
@@ -53,6 +78,11 @@ class TestStrictBankAccount {
      */
     @Test
     public void testWithdrawingTooMuch() {
-        fail("To be implemented");
+    try {
+        bankAccount.withdraw(1, 150);
+        fail("Withdrawing too much should throw exception");
+        } catch (IllegalArgumentException e) {
+        // expected
+        }
     }
 }
